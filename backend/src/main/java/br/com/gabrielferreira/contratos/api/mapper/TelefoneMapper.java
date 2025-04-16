@@ -1,61 +1,41 @@
 package br.com.gabrielferreira.contratos.api.mapper;
 
-import br.com.gabrielferreira.contratos.api.model.QuantidadeTelefoneModel;
-import br.com.gabrielferreira.contratos.api.model.TelefoneModel;
-import br.com.gabrielferreira.contratos.api.model.input.TelefoneInputModel;
-import br.com.gabrielferreira.contratos.api.model.params.TelefoneParamsModel;
+import br.com.gabrielferreira.contratos.api.dto.request.CriarTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.FiltroTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.QuantidadeTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.TelefoneDTO;
+import br.com.gabrielferreira.contratos.domain.dao.filter.TelefoneFilterModel;
 import br.com.gabrielferreira.contratos.domain.model.Telefone;
 import br.com.gabrielferreira.contratos.domain.model.enums.TipoTelefoneEnum;
-import br.com.gabrielferreira.contratos.domain.repository.filter.TelefoneFilterModel;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
 
-import static br.com.gabrielferreira.contratos.common.utils.DataUtils.*;
+@Mapper(componentModel = "spring")
+public interface TelefoneMapper {
 
-@Component
-public class TelefoneMapper {
+    @Mapping(target = "tipoTelefone", expression = "java(buildTipoTelefone(criarTelefoneDTO.tipoTelefone()))")
+    Telefone toTelefone(CriarTelefoneDTO criarTelefoneDTO);
 
-    public Telefone toTelefone(TelefoneInputModel telefoneInputModel){
-        return Telefone.builder()
-                .ddd(telefoneInputModel.getDdd())
-                .numero(telefoneInputModel.getNumero())
-                .descricao(telefoneInputModel.getDescricao())
-                .tipoTelefone(TipoTelefoneEnum.valueOf(telefoneInputModel.getTipoTelefone()))
-                .build();
+    @Mapping(target = "tipoTelefoneDescricao", expression = "java(buildTipoTelefoneDescricao(telefone.getTipoTelefone()))")
+    TelefoneDTO toTelefoneDto(Telefone telefone);
+
+    QuantidadeTelefoneDTO toQuantidadeTelefoneDto(Long quantidadeDeTelefone);
+
+    TelefoneFilterModel toTelefoneFilterModel(FiltroTelefoneDTO filtroTelefoneDTO);
+
+    default Page<TelefoneDTO> toTelefoneDtos(Page<Telefone> telefones) {
+        return telefones.map(this::toTelefoneDto);
     }
 
-    public TelefoneModel toTelefoneModel(Telefone telefone){
-        return TelefoneModel.builder()
-                .id(telefone.getId())
-                .ddd(telefone.getDdd())
-                .numero(telefone.getNumero())
-                .descricao(telefone.getDescricao())
-                .tipoTelefone(telefone.getTipoTelefone().name())
-                .tipoTelefoneDescricao(telefone.getTipoTelefone().getDescricao())
-                .dataCadastro(toFusoPadraoSistema(telefone.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(telefone.getDataAtualizacao()))
-                .build();
+    @Named("buildTipoTelefone")
+    default TipoTelefoneEnum buildTipoTelefone(String tipoTelefone) {
+        return TipoTelefoneEnum.valueOf(tipoTelefone);
     }
 
-    public Page<TelefoneModel> toTelefonesModels(Page<Telefone> telefones){
-        return telefones.map(this::toTelefoneModel);
-    }
-
-    public TelefoneFilterModel toTelefoneFilterModel(TelefoneParamsModel telefoneParamsModel){
-        return TelefoneFilterModel.builder()
-                .id(telefoneParamsModel.getId())
-                .ddd(telefoneParamsModel.getDdd())
-                .numero(telefoneParamsModel.getNumero())
-                .descricao(telefoneParamsModel.getDescricao())
-                .tipoTelefone(telefoneParamsModel.getTipoTelefone())
-                .dataCadastro(telefoneParamsModel.getDataCadastro())
-                .dataAtualizacao(telefoneParamsModel.getDataAtualizacao())
-                .build();
-    }
-
-    public QuantidadeTelefoneModel toQuantidadeTelefoneModel(Long quantidade){
-        return QuantidadeTelefoneModel.builder()
-                .quantidadeDeTelefone(quantidade)
-                .build();
+    @Named("buildTipoTelefoneDescricao")
+    default String buildTipoTelefoneDescricao(TipoTelefoneEnum tipoTelefoneEnum) {
+        return tipoTelefoneEnum.getDescricao();
     }
 }

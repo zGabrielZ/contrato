@@ -27,7 +27,8 @@ public class DepositoService {
 
     @Transactional
     public Saldo depositar(Long idUsuario, Saldo saldo){
-        Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+        //Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+        Usuario usuario = null;
 
         saldo.setUsuario(usuario);
         saldo.setTipoMovimentacao(TipoMovimentacaoEnum.DEPOSITO);
@@ -39,9 +40,9 @@ public class DepositoService {
     }
 
     public Page<Saldo> buscarDepositosPaginados(Long idUsuario, SaldoFilterModel filtro, Pageable pageable){
-        if(!usuarioService.isUsuarioExistente(idUsuario)){
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
+//        if(!usuarioService.isUsuarioExistente(idUsuario)){
+//            throw new NaoEncontradoException("Usuário não encontrado");
+//        }
         return saldoRepository.findAll(new SaldoSpecification(idUsuario, filtro, TipoMovimentacaoEnum.DEPOSITO), pageable);
     }
 

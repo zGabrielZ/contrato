@@ -51,29 +51,25 @@ public class Telefone implements Serializable {
     private ZonedDateTime dataAtualizacao;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         dataCadastro = ZonedDateTime.now(UTC);
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         dataAtualizacao = ZonedDateTime.now(UTC);
     }
 
-    public boolean isResidencial(){
+    public boolean isResidencial() {
         return this.tipoTelefone.equals(TipoTelefoneEnum.RESIDENCIAL);
     }
 
-    public boolean isCelular(){
+    public boolean isCelular() {
         return this.tipoTelefone.equals(TipoTelefoneEnum.CELULAR);
     }
 
-    public String getNumeroFormatado(){
-        if(this.numero.length() == 8){
-            return toMascaraTelefoneResidencial(this.ddd, this.numero);
-        } else {
-            return toMascaraTelefoneCelular(this.ddd, this.numero);
-        }
+    public String getNumeroFormatado() {
+        return toMascaraTelefone(this.ddd, this.numero);
     }
 
 }

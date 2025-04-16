@@ -1,84 +1,32 @@
 package br.com.gabrielferreira.contratos.api.mapper;
 
-import br.com.gabrielferreira.contratos.api.model.UsuarioModel;
-import br.com.gabrielferreira.contratos.api.model.UsuarioResumidoModel;
-import br.com.gabrielferreira.contratos.api.model.input.UsuarioInputModel;
-import br.com.gabrielferreira.contratos.api.model.params.UsuarioParamsModel;
+import br.com.gabrielferreira.contratos.api.dto.request.AtualizarUsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.CriarUsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.FiltroUsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.UsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.UsuarioResumidoDTO;
 import br.com.gabrielferreira.contratos.domain.model.Usuario;
-import br.com.gabrielferreira.contratos.domain.repository.filter.UsuarioFilterModel;
-import lombok.RequiredArgsConstructor;
+import br.com.gabrielferreira.contratos.domain.dao.filter.UsuarioFilterModel;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
 
-import static br.com.gabrielferreira.contratos.common.utils.DataUtils.*;
+@Mapper(componentModel = "spring")
+public interface UsuarioMapper {
 
-@Component
-@RequiredArgsConstructor
-public class UsuarioMapper {
+    Usuario toUsuario(CriarUsuarioDTO criarUsuarioDTO);
 
-    private final PerfilMapper perfilMapper;
+    Usuario toUsuario(AtualizarUsuarioDTO atualizarUsuarioDTO);
 
-    public Usuario toUsuario(UsuarioInputModel usuario){
-        return Usuario.builder()
-                .nome(usuario.getNome())
-                .sobrenome(usuario.getSobrenome())
-                .email(usuario.getEmail())
-                .perfis(perfilMapper.toPerfis(usuario.getPerfis()))
-                .build();
-    }
+    @Mapping(source = "usuario.saldoTotal.valor", target = "saldoTotal")
+    UsuarioDTO toUsuarioDto(Usuario usuario);
 
-    public UsuarioModel toUsuarioModel(Usuario usuario){
-        return UsuarioModel.builder()
-                .id(usuario.getId())
-                .nome(usuario.getNome())
-                .sobrenome(usuario.getSobrenome())
-                .email(usuario.getEmail())
-                .perfis(perfilMapper.toPerfisModels(usuario.getPerfis()))
-                .saldoTotal(usuario.getSaldoTotal() != null ? usuario.getSaldoTotal().getValor() : null)
-                .dataCadastro(toFusoPadraoSistema(usuario.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(usuario.getDataAtualizacao()))
-                .build();
-    }
+    UsuarioFilterModel toUsuarioFilterModel(FiltroUsuarioDTO filtroUsuarioDTO);
 
-    public UsuarioModel toUsuarioSemTelefoneModel(Usuario usuario){
-        return UsuarioModel.builder()
-                .id(usuario.getId())
-                .nome(usuario.getNome())
-                .sobrenome(usuario.getSobrenome())
-                .email(usuario.getEmail())
-                .perfis(perfilMapper.toPerfisModels(usuario.getPerfis()))
-                .saldoTotal(usuario.getSaldoTotal() != null ? usuario.getSaldoTotal().getValor() : null)
-                .dataCadastro(toFusoPadraoSistema(usuario.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(usuario.getDataAtualizacao()))
-                .build();
-    }
+    @Mapping(source = "usuario.saldoTotal.valor", target = "saldoTotal")
+    UsuarioResumidoDTO toUsuarioResumidoDto(Usuario usuario);
 
-    public UsuarioResumidoModel toUsuarioResumidoModel(Usuario usuario){
-        return UsuarioResumidoModel.builder()
-                .id(usuario.getId())
-                .nome(usuario.getNome())
-                .sobrenome(usuario.getSobrenome())
-                .email(usuario.getEmail())
-                .saldoTotal(usuario.getSaldoTotal() != null ? usuario.getSaldoTotal().getValor() : null)
-                .dataCadastro(toFusoPadraoSistema(usuario.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(usuario.getDataAtualizacao()))
-                .build();
-    }
-
-    public Page<UsuarioResumidoModel> toUsuariosResumidosModels(Page<Usuario> usuarios){
-        return usuarios.map(this::toUsuarioResumidoModel);
-    }
-
-    public UsuarioFilterModel toUsuarioFilterModel(UsuarioParamsModel usuarioParamsModel){
-        return UsuarioFilterModel.builder()
-                .id(usuarioParamsModel.getId())
-                .nome(usuarioParamsModel.getNome())
-                .sobrenome(usuarioParamsModel.getSobrenome())
-                .email(usuarioParamsModel.getEmail())
-                .saldoTotalInicial(usuarioParamsModel.getSaldoTotalInicial())
-                .saldoTotalFinal(usuarioParamsModel.getSaldoTotalFinal())
-                .dataCadastro(usuarioParamsModel.getDataCadastro())
-                .dataAtualizacao(usuarioParamsModel.getDataAtualizacao())
-                .build();
+    default Page<UsuarioResumidoDTO> toUsuarioResumidoDtos(Page<Usuario> usuarios) {
+        return usuarios.map(this::toUsuarioResumidoDto);
     }
 }

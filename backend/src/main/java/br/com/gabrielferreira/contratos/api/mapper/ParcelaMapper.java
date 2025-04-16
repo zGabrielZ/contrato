@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static br.com.gabrielferreira.contratos.common.utils.DataUtils.*;
-
 @Component
 public class ParcelaMapper {
 
@@ -17,8 +15,8 @@ public class ParcelaMapper {
                 .data(parcela.getData())
                 .valor(parcela.getValor())
                 .situacao(parcela.getSituacaoParcela().name())
-                .dataCadastro(toFusoPadraoSistema(parcela.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(parcela.getDataAtualizacao()))
+                .dataCadastro(parcela.getDataCadastro())
+                .dataAtualizacao(parcela.getDataAtualizacao())
                 .build();
     }
 

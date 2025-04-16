@@ -36,7 +36,8 @@ public class ContratoService {
 
     @Transactional
     public Contrato cadastrarContrato(Long idUsuario, Contrato contrato){
-        Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+        //Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+        Usuario usuario = null;
         contratoValidator.validarNumeroCadastrado(contrato.getNumero());
         contratoValidator.validarValorContratoComUsuarioSaldo(contrato.getValorTotal(), usuario);
 

@@ -47,7 +47,7 @@ public class Contrato implements Serializable {
     @Enumerated(EnumType.STRING)
     private SituacaoContratoEnum situacaoContrato;
 
-    @OneToMany(mappedBy = "contrato", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "contrato", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private List<Parcela> parcelas = new ArrayList<>();
 
     @JoinColumn(name = "ID_USUARIO", nullable = false)
@@ -61,12 +61,12 @@ public class Contrato implements Serializable {
     private ZonedDateTime dataAtualizacao;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         dataCadastro = ZonedDateTime.now(UTC);
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         dataAtualizacao = ZonedDateTime.now(UTC);
     }
 }

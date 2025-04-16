@@ -6,7 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum SituacaoParcelaEnum {
-
     EM_ANDAMENTO("Em andamento"),
     PAGO("Pago"),
     ATRASAOD("Atrasado");

@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static br.com.gabrielferreira.contratos.common.utils.DataUtils.*;
-
 @Component
 @RequiredArgsConstructor
 public class ContratoMapper {
@@ -38,8 +36,8 @@ public class ContratoMapper {
                 .numeroDeParcelas(parcelaModels.size())
                 .situacao(contrato.getSituacaoContrato().name())
                 .parcelas(parcelaModels)
-                .dataCadastro(toFusoPadraoSistema(contrato.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(contrato.getDataAtualizacao()))
+                .dataCadastro(contrato.getDataCadastro())
+                .dataAtualizacao(contrato.getDataAtualizacao())
                 .build();
     }
 }

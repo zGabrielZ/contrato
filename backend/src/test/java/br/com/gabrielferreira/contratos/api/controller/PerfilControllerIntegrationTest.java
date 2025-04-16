@@ -31,7 +31,7 @@ class PerfilControllerIntegrationTest {
     private Long idPerfilInexistente;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         idPerfilExistente = 1L;
         idPerfilInexistente = -1L;
     }

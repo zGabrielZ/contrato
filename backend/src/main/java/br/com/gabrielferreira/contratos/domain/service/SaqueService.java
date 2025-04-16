@@ -32,7 +32,8 @@ public class SaqueService {
 
     @Transactional
     public Saldo saque(Long idUsuario, Saldo saldo){
-        Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+//        Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
+        Usuario usuario = null;
         saqueValidator.validarSaldoTotalUsuario(usuario.getId(), saldo.getValor());
 
         saldo.setValor(saldo.getValor().multiply(BigDecimal.valueOf(-1.0)));
@@ -46,9 +47,9 @@ public class SaqueService {
     }
 
     public Page<Saldo> buscarSaquesPaginados(Long idUsuario, SaldoFilterModel filtro, Pageable pageable){
-        if(!usuarioService.isUsuarioExistente(idUsuario)){
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
+//        if(!usuarioService.isUsuarioExistente(idUsuario)){
+//            throw new NaoEncontradoException("Usuário não encontrado");
+//        }
         return saldoRepository.findAll(new SaldoSpecification(idUsuario, filtro, TipoMovimentacaoEnum.SAQUE), pageable);
     }
 

@@ -38,12 +38,12 @@ public class SaldoTotalUsuario implements Serializable {
     private ZonedDateTime dataAtualizacao;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         dataCadastro = ZonedDateTime.now(UTC);
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         dataAtualizacao = ZonedDateTime.now(UTC);
     }
 }

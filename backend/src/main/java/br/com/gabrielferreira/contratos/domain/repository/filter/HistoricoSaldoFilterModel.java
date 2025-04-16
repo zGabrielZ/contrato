@@ -33,31 +33,31 @@ public class HistoricoSaldoFilterModel implements Serializable {
 
     private LocalDate dataAtualizacao;
 
-    public boolean isIdExistente(){
+    public boolean isIdExistente() {
         return this.id != null;
     }
 
-    public boolean isValorAtualInicialExistente(){
+    public boolean isValorAtualInicialExistente() {
         return this.valorAtualInicial != null;
     }
 
-    public boolean isValorAtualFinalExistente(){
+    public boolean isValorAtualFinalExistente() {
         return this.valorAtualFinal != null;
     }
 
-    public boolean isQuantidadeInformadaInicialExistente(){
+    public boolean isQuantidadeInformadaInicialExistente() {
         return this.quantidadeInformadaInicial != null;
     }
 
-    public boolean isQuantidadeInformadaFinalExistente(){
+    public boolean isQuantidadeInformadaFinalExistente() {
         return this.quantidadeInformadaFinal != null;
     }
 
-    public boolean isDataCadastroExistente(){
+    public boolean isDataCadastroExistente() {
         return this.dataCadastro != null;
     }
 
-    public boolean isDataAtualizacaoExistente(){
+    public boolean isDataAtualizacaoExistente() {
         return this.dataAtualizacao != null;
     }
 }

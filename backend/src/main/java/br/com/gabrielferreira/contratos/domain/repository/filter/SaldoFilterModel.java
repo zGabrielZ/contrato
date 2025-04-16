@@ -29,23 +29,23 @@ public class SaldoFilterModel implements Serializable {
 
     private LocalDate dataAtualizacao;
 
-    public boolean isIdExistente(){
+    public boolean isIdExistente() {
         return this.id != null;
     }
 
-    public boolean isValorInicialExistente(){
+    public boolean isValorInicialExistente() {
         return this.valorInicial != null;
     }
 
-    public boolean isValorFinalExistente(){
+    public boolean isValorFinalExistente() {
         return this.valorFinal != null;
     }
 
-    public boolean isDataCadastroExistente(){
+    public boolean isDataCadastroExistente() {
         return this.dataCadastro != null;
     }
 
-    public boolean isDataAtualizacaoExistente(){
+    public boolean isDataAtualizacaoExistente() {
         return this.dataAtualizacao != null;
     }
 }

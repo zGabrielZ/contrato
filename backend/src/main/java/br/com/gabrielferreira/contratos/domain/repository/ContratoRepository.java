@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,6 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     @Query("SELECT c.numero FROM Contrato c " +
             "WHERE c.numero = :numero")
     Optional<Long> buscarContratoPorNumero(@Param("numero") Long numero);
+
+    List<Contrato> findAllByUsuarioId(Long idUsuario);
 }

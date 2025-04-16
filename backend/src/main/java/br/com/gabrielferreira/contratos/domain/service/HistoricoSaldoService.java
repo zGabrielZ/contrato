@@ -33,9 +33,9 @@ public class HistoricoSaldoService {
     }
 
     public Page<HistoricoSaldo> buscarHistoricoPorUsuario(Long idUsuario, HistoricoSaldoFilterModel filtro, Pageable pageable){
-        if(!usuarioService.isUsuarioExistente(idUsuario)){
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
+//        if(!usuarioService.isUsuarioExistente(idUsuario)){
+//            throw new NaoEncontradoException("Usuário não encontrado");
+//        }
         return historicoSaldoRepository.findAll(new HistoricoSaldoSpecification(idUsuario, filtro), pageable);
     }
 

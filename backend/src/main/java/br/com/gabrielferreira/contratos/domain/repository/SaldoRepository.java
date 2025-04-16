@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,4 +25,6 @@ public interface SaldoRepository extends JpaRepository<Saldo, Long> {
             "s.id = :id AND " +
             "s.tipoMovimentacao = :tipoMovimentacao")
     Optional<Saldo> buscarSaldoPorId(@Param("idUsuario") Long idUsuario, @Param("id") Long id, @Param("tipoMovimentacao") TipoMovimentacaoEnum tipoMovimentacao);
+
+    List<Saldo> findAllByUsuarioId(Long idUsuario);
 }

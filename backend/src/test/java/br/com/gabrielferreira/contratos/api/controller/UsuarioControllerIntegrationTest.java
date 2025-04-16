@@ -1,7 +1,8 @@
 package br.com.gabrielferreira.contratos.api.controller;
 
-import br.com.gabrielferreira.contratos.api.model.input.PerfilInputModel;
-import br.com.gabrielferreira.contratos.api.model.input.UsuarioInputModel;
+import br.com.gabrielferreira.contratos.api.dto.request.AtualizarUsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.CriarUsuarioDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.PerfilIdDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,31 +37,31 @@ class UsuarioControllerIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    private UsuarioInputModel input;
+    private CriarUsuarioDTO create;
 
     private Long idUsuarioExistente;
 
     private Long idUsuarioInexistente;
 
-    private UsuarioInputModel inputUpdate;
+    private AtualizarUsuarioDTO update;
 
     @BeforeEach
-    void setUp(){
-        input = criarUsuarioInput();
+    void setUp() {
+        create = criarUsuarioDto();
         idUsuarioExistente = 1L;
         idUsuarioInexistente = -1L;
-        inputUpdate = criarUsuarioInputUpdate();
+        update = criarUsuarioUpdateDto();
     }
 
     @Test
     @DisplayName("Deve cadastrar usuário quando informar dados")
     @Order(1)
-    void deveCadastrarUsuarioQuandoInformarDados() throws Exception{
-        String jsonBody = objectMapper.writeValueAsString(input);
+    void deveCadastrarUsuarioQuandoInformarDados() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(create);
 
-        String nomeEsperado = input.getNome();
-        String sobrenomeEsperado = input.getSobrenome();
-        String emailEsperado = input.getEmail();
+        String nomeEsperado = create.nome();
+        String sobrenomeEsperado = create.sobrenome();
+        String emailEsperado = create.email();
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
@@ -80,13 +81,10 @@ class UsuarioControllerIntegrationTest {
     @Test
     @DisplayName("Não deve cadastrar usuário quando não informar dados")
     @Order(2)
-    void naoDeveCadastrarUsuarioQuandoNaoInformarDados() throws Exception{
-        input.setNome(null);
-        input.setSobrenome(null);
-        input.setEmail(null);
-        input.setPerfis(null);
+    void naoDeveCadastrarUsuarioQuandoNaoInformarDados() throws Exception {
+        create = criarUsuarioDtoNulo();
 
-        String jsonBody = objectMapper.writeValueAsString(input);
+        String jsonBody = objectMapper.writeValueAsString(create);
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
@@ -103,10 +101,10 @@ class UsuarioControllerIntegrationTest {
     @Test
     @DisplayName("Não deve cadastrar usuário quando informar email existente")
     @Order(3)
-    void naoDeveCadastrarUsuarioQuandoInformarEmailExistente() throws Exception{
-        input.setEmail("jose@email.com");
+    void naoDeveCadastrarUsuarioQuandoInformarEmailExistente() throws Exception {
+        create = criarUsuarioDtoEmailDuplicado("jose@email.com");
 
-        String jsonBody = objectMapper.writeValueAsString(input);
+        String jsonBody = objectMapper.writeValueAsString(create);
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
@@ -122,12 +120,11 @@ class UsuarioControllerIntegrationTest {
     @Test
     @DisplayName("Não deve cadastrar usuário quando informar perfis duplicados")
     @Order(4)
-    void naoDeveCadastrarUsuarioQuandoInformarPerfisDuplicados() throws Exception{
-        PerfilInputModel perfil1 = input.getPerfis().get(0);
-        PerfilInputModel perfil2 = input.getPerfis().get(0);
-        input.setPerfis(Arrays.asList(perfil1, perfil2));
+    void naoDeveCadastrarUsuarioQuandoInformarPerfisDuplicados() throws Exception {
+        PerfilIdDTO perfil1 = new PerfilIdDTO(1L);
+        create = criarUsuarioDtoPerfisDuplicados(Arrays.asList(perfil1, perfil1));
 
-        String jsonBody = objectMapper.writeValueAsString(input);
+        String jsonBody = objectMapper.writeValueAsString(create);
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
@@ -143,12 +140,11 @@ class UsuarioControllerIntegrationTest {
     @Test
     @DisplayName("Não deve cadastrar usuário quando informar perfis inexistente")
     @Order(5)
-    void naoDeveCadastrarUsuarioQuandoInformarPerfisInexistente() throws Exception{
-        PerfilInputModel perfil1 = input.getPerfis().get(0);
-        perfil1.setId(-1L);
-        input.setPerfis(List.of(perfil1));
+    void naoDeveCadastrarUsuarioQuandoInformarPerfisInexistente() throws Exception {
+        PerfilIdDTO perfil1 = new PerfilIdDTO(-1L);
+        create = criarUsuarioDtoPerfisDuplicados(List.of(perfil1));
 
-        String jsonBody = objectMapper.writeValueAsString(input);
+        String jsonBody = objectMapper.writeValueAsString(create);
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
@@ -193,13 +189,12 @@ class UsuarioControllerIntegrationTest {
     @Test
     @DisplayName("Deve atualizar usuário quando informar dados")
     @Order(8)
-    void deveAtualizarUsuarioQuandoInformarDados() throws Exception{
-        String jsonBody = objectMapper.writeValueAsString(inputUpdate);
+    void deveAtualizarUsuarioQuandoInformarDados() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(update);
 
         Long idEsperado = idUsuarioExistente;
-        String nomeEsperado = inputUpdate.getNome();
-        String sobrenomeEsperado = inputUpdate.getSobrenome();
-        String emailEsperado = inputUpdate.getEmail();
+        String nomeEsperado = update.nome();
+        String sobrenomeEsperado = update.sobrenome();
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idUsuarioExistente)
@@ -211,31 +206,13 @@ class UsuarioControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.id").value(idEsperado));
         resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
         resultActions.andExpect(jsonPath("$.sobrenome").value(sobrenomeEsperado));
-        resultActions.andExpect(jsonPath("$.email").value(emailEsperado));
         resultActions.andExpect(jsonPath("$.perfis").exists());
         resultActions.andExpect(jsonPath("$.dataCadastro").exists());
     }
 
     @Test
-    @DisplayName("Não deve atualizar usuário quando informar email já existente")
-    @Order(9)
-    void naoDeveAtualizarUsuarioQuandoInformarEmailJaExistente() throws Exception{
-        inputUpdate.setEmail("marcos@email.com");
-        String jsonBody = objectMapper.writeValueAsString(inputUpdate);
-
-        ResultActions resultActions = mockMvc
-                .perform(put(URL.concat("/{id}"), idUsuarioExistente)
-                        .content(jsonBody)
-                        .contentType(MEDIA_TYPE_JSON)
-                        .accept(MEDIA_TYPE_JSON));
-
-        resultActions.andExpect(status().isBadRequest());
-        resultActions.andExpect(jsonPath("$.mensagem").value("Este e-mail 'marcos@email.com' já foi cadastrado"));
-    }
-
-    @Test
     @DisplayName("Deve deletar usuário quando existir dados")
-    @Order(10)
+    @Order(9)
     void deveDeletarUsuarioQuandoExistirDados() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idUsuarioExistente)
@@ -246,8 +223,8 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     @DisplayName("Não deve deletar usuário quando não existir dados")
-    @Order(11)
-    void naoDeveDeletarEvento() throws Exception {
+    @Order(10)
+    void naoDeveDeletarUsuario() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idUsuarioInexistente)
                         .accept(MEDIA_TYPE_JSON));
@@ -258,7 +235,7 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     @DisplayName("Deve buscar usuário")
-    @Order(12)
+    @Order(11)
     void deveBuscarUsuarios() throws Exception {
         String filtro = "?page=0&size=5&sort=id,desc&sort=nome,desc&sort=email,desc";
 
@@ -273,7 +250,7 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     @DisplayName("Deve buscar usuário quando informar parametros")
-    @Order(13)
+    @Order(12)
     void deveBuscarUsuariosQuandoInformarParametros() throws Exception {
         String filtro = "?page=0&size=5&id=1&nome=Marcos&sobrenome=Silva&email=marcos@email.com&dataCadastro=" + LocalDate.now();
 
@@ -288,7 +265,7 @@ class UsuarioControllerIntegrationTest {
 
     @Test
     @DisplayName("Não deve buscar usuário quando informar periodo de saldo")
-    @Order(14)
+    @Order(13)
     void naoDeveBuscarUsuarioQuandoInformarPeriodoSaldo() throws Exception {
         String filtro = "?page=0&size=5&saldoTotalInicial=100.00&saldoTotalFinal=200.00";
 

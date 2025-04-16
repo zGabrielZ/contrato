@@ -6,17 +6,16 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TipoMovimentacaoEnum {
-
     DEPOSITO("Déposito"),
     SAQUE("Saque");
 
     private final String descricao;
 
-    public static boolean isSaque(TipoMovimentacaoEnum tipoMovimentacaoEnum){
+    public static boolean isSaque(TipoMovimentacaoEnum tipoMovimentacaoEnum) {
         return SAQUE.name().equals(tipoMovimentacaoEnum.name());
     }
 
-    public static boolean isDeposito(TipoMovimentacaoEnum tipoMovimentacaoEnum){
+    public static boolean isDeposito(TipoMovimentacaoEnum tipoMovimentacaoEnum) {
         return DEPOSITO.name().equals(tipoMovimentacaoEnum.name());
     }
 }

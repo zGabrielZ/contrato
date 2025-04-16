@@ -38,7 +38,7 @@ public class Usuario implements Serializable {
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Telefone> telefones = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -48,16 +48,16 @@ public class Usuario implements Serializable {
     private List<Perfil> perfis = new ArrayList<>();
 
     @JoinColumn(name = "ID_SALDO_TOTAL", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private SaldoTotalUsuario saldoTotal;
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Saldo> saldos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<HistoricoSaldo> historicoSaldos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Contrato> contratos = new ArrayList<>();
 
     @Column(name = "DATA_CADASTRO", nullable = false)
@@ -67,12 +67,12 @@ public class Usuario implements Serializable {
     private ZonedDateTime dataAtualizacao;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         dataCadastro = ZonedDateTime.now(UTC);
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         dataAtualizacao = ZonedDateTime.now(UTC);
     }
 }

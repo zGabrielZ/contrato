@@ -35,11 +35,11 @@ public class Perfil implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "perfis")
     private List<Usuario> usuarios = new ArrayList<>();
 
-    public boolean isContemPerfil(List<Perfil> perfis){
+    public boolean isContemPerfil(List<Perfil> perfis) {
         return perfis.stream().anyMatch(p -> p.getId().equals(this.id));
     }
 
-    public boolean isNaoContemPerfil(List<Perfil> perfis){
+    public boolean isNaoContemPerfil(List<Perfil> perfis) {
         return !isContemPerfil(perfis);
     }
 }

@@ -1,17 +1,21 @@
 package br.com.gabrielferreira.contratos.api.controller;
 
+import br.com.gabrielferreira.contratos.api.dto.request.CriarTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.request.FiltroTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.QuantidadeTelefoneDTO;
+import br.com.gabrielferreira.contratos.api.dto.response.TelefoneDTO;
 import br.com.gabrielferreira.contratos.api.mapper.TelefoneMapper;
-import br.com.gabrielferreira.contratos.api.model.QuantidadeTelefoneModel;
-import br.com.gabrielferreira.contratos.api.model.TelefoneModel;
-import br.com.gabrielferreira.contratos.api.model.input.TelefoneInputModel;
-import br.com.gabrielferreira.contratos.api.model.params.TelefoneParamsModel;
+import br.com.gabrielferreira.contratos.domain.dao.filter.TelefoneFilterModel;
 import br.com.gabrielferreira.contratos.domain.model.Telefone;
-import br.com.gabrielferreira.contratos.domain.repository.filter.TelefoneFilterModel;
 import br.com.gabrielferreira.contratos.domain.service.TelefoneService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,54 +32,92 @@ public class TelefoneController {
 
     private final TelefoneMapper telefoneMapper;
 
-    @GetMapping
-    public ResponseEntity<Page<TelefoneModel>> buscarTelefonesPorUsuario(@PathVariable Long idUsuario, @PageableDefault(size = 5) Pageable pageable, @Valid TelefoneParamsModel params){
-        TelefoneFilterModel telefoneFilterModel = telefoneMapper.toTelefoneFilterModel(params);
-        Page<Telefone> telefones = telefoneService.buscarTelefones(idUsuario, pageable, telefoneFilterModel);
-        Page<TelefoneModel> telefoneModels = telefoneMapper.toTelefonesModels(telefones);
-
-        return ResponseEntity.ok().body(telefoneModels);
-    }
-
-    @GetMapping("/{idTelefone}")
-    public ResponseEntity<TelefoneModel> buscarTelefonePorId(@PathVariable Long idUsuario, @PathVariable Long idTelefone){
-        Telefone telefone = telefoneService.buscarTelefonePorId(idUsuario, idTelefone);
-        TelefoneModel telefoneModel = telefoneMapper.toTelefoneModel(telefone);
-
-        return ResponseEntity.ok().body(telefoneModel);
-    }
-
-    @GetMapping("/quantidade")
-    public ResponseEntity<QuantidadeTelefoneModel> buscarQuantidadeTelefonesPorUsuario(@PathVariable Long idUsuario){
-        Long quantidadeTelefone = telefoneService.buscarQuantidadeTelefonePorUsuario(idUsuario);
-        QuantidadeTelefoneModel quantidadeTelefoneModel = telefoneMapper.toQuantidadeTelefoneModel(quantidadeTelefone);
-
-        return ResponseEntity.ok().body(quantidadeTelefoneModel);
-    }
-
+    @Operation(summary = "Cadastrar telefone")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Telefone cadastrado"
+            )
+    })
     @PostMapping
-    public ResponseEntity<TelefoneModel> cadastrarTelefone(@PathVariable Long idUsuario, @Valid @RequestBody TelefoneInputModel input){
-        Telefone telefone = telefoneMapper.toTelefone(input);
-        Telefone telefoneCadastrado = telefoneService.cadastrarTelefone(idUsuario, telefone);
-        TelefoneModel telefoneModel = telefoneMapper.toTelefoneModel(telefoneCadastrado);
+    public ResponseEntity<TelefoneDTO> cadastrarTelefone(@PathVariable Long idUsuario, @Valid @RequestBody CriarTelefoneDTO create) {
+        Telefone telefone = telefoneMapper.toTelefone(create);
+        Telefone telefoneCadastrado = telefoneService.cadastrar(idUsuario, telefone);
+        TelefoneDTO telefoneDto = telefoneMapper.toTelefoneDto(telefoneCadastrado);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
-                .buildAndExpand(telefoneModel.getId()).toUri();
-        return ResponseEntity.created(uri).body(telefoneModel);
+                .buildAndExpand(telefoneDto.id()).toUri();
+        return ResponseEntity.created(uri).body(telefoneDto);
     }
 
+    @Operation(summary = "Buscar telefone")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Telefone encontrado"
+            )
+    })
+    @GetMapping("/{idTelefone}")
+    public ResponseEntity<TelefoneDTO> buscarTelefonePorId(@PathVariable Long idUsuario, @PathVariable Long idTelefone) {
+        Telefone telefone = telefoneService.consultarTelefonePorId(idUsuario, idTelefone);
+        return ResponseEntity.ok().body(telefoneMapper.toTelefoneDto(telefone));
+    }
+
+    @Operation(summary = "Buscar quantidade de telefone por usuário")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Quantidade de telefone encontrado"
+            )
+    })
+    @GetMapping("/quantidade")
+    public ResponseEntity<QuantidadeTelefoneDTO> buscarQuantidadeTelefonesPorUsuario(@PathVariable Long idUsuario) {
+        Long quantidadeTelefone = telefoneService.buscarQuantidadePorUsuario(idUsuario);
+        return ResponseEntity.ok().body(telefoneMapper.toQuantidadeTelefoneDto(quantidadeTelefone));
+    }
+
+    @Operation(summary = "Buscar telefones por usuário")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Telefones encontrados"
+            )
+    })
+    @GetMapping
+    public ResponseEntity<Page<TelefoneDTO>> buscarTelefonesPorUsuario(@PathVariable Long idUsuario,
+                                                                       @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                       @Valid FiltroTelefoneDTO filtro) {
+        TelefoneFilterModel telefoneFilterModel = telefoneMapper.toTelefoneFilterModel(filtro);
+        Page<Telefone> telefones = telefoneService.consultar(idUsuario, pageable, telefoneFilterModel);
+        return ResponseEntity.ok().body(telefoneMapper.toTelefoneDtos(telefones));
+    }
+
+    @Operation(summary = "Atualizar telefone")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Telefone atualizado"
+            )
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<TelefoneModel> atualizarTelefonePorId(@PathVariable Long idUsuario, @PathVariable Long id, @Valid @RequestBody TelefoneInputModel input){
-        Telefone telefone = telefoneMapper.toTelefone(input);
-        Telefone telefoneAtualizado = telefoneService.atualizarTelefone(idUsuario, id, telefone);
-        TelefoneModel usuarioModel = telefoneMapper.toTelefoneModel(telefoneAtualizado);
-
-        return ResponseEntity.ok().body(usuarioModel);
+    public ResponseEntity<TelefoneDTO> atualizarTelefonePorId(@PathVariable Long idUsuario,
+                                                                @PathVariable Long id,
+                                                                @Valid @RequestBody CriarTelefoneDTO update) {
+        Telefone telefone = telefoneMapper.toTelefone(update);
+        Telefone telefoneAtualizado = telefoneService.atualizar(idUsuario, id, telefone);
+        return ResponseEntity.ok().body(telefoneMapper.toTelefoneDto(telefoneAtualizado));
     }
 
+    @Operation(summary = "Deletar telefone")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Telefone deletado"
+            )
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarTelefonePorId(@PathVariable Long idUsuario, @PathVariable Long id){
-        telefoneService.deletarTelefonePorId(idUsuario, id);
+        telefoneService.deletarPorId(idUsuario, id);
         return ResponseEntity.noContent().build();
     }
 }

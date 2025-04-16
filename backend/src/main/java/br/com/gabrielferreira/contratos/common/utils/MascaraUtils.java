@@ -1,30 +1,20 @@
 package br.com.gabrielferreira.contratos.common.utils;
 
-import br.com.gabrielferreira.contratos.domain.exception.MsgErroException;
-
-import javax.swing.text.MaskFormatter;
+import org.apache.commons.lang3.StringUtils;
 
 public class MascaraUtils {
 
     private MascaraUtils(){}
 
-    public static String toMascaraTelefoneResidencial(String ddd, String numero){
-        try {
-            MaskFormatter telefoneResidencialFormatacao = new MaskFormatter("(##) ####-####");
-            telefoneResidencialFormatacao.setValueContainsLiteralCharacters(false);
-            return telefoneResidencialFormatacao.valueToString(ddd.concat(numero));
-        } catch (Exception e){
-            throw new MsgErroException("Erro na formatação do telefone residencial");
+    public static String toMascaraTelefone(String ddd, String numero) {
+        if (StringUtils.isNotBlank(ddd) && StringUtils.isNotBlank(numero)) {
+            String numeroCompleto = ddd.concat(numero);
+            if (numero.length() == 8) {
+                return numeroCompleto.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3");
+            } else if (numero.length() == 9) {
+                return numeroCompleto.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3");
+            }
         }
-    }
-
-    public static String toMascaraTelefoneCelular(String ddd, String numero){
-        try {
-            MaskFormatter telefoneCelularFormatacao = new MaskFormatter("(##) #####-####");
-            telefoneCelularFormatacao.setValueContainsLiteralCharacters(false);
-            return telefoneCelularFormatacao.valueToString(ddd.concat(numero));
-        } catch (Exception e){
-            throw new MsgErroException("Erro na formatação do telefone celular");
-        }
+        return null;
     }
 }

@@ -8,8 +8,6 @@ import br.com.gabrielferreira.contratos.domain.repository.filter.SaldoFilterMode
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import static br.com.gabrielferreira.contratos.common.utils.DataUtils.toFusoPadraoSistema;
-
 @Component
 public class SaldoMapper {
 
@@ -24,8 +22,8 @@ public class SaldoMapper {
                 .id(saldo.getId())
                 .valor(saldo.getValor())
                 .tipoMovimentacao(saldo.getTipoMovimentacao().name())
-                .dataCadastro(toFusoPadraoSistema(saldo.getDataCadastro()))
-                .dataAtualizacao(toFusoPadraoSistema(saldo.getDataAtualizacao()))
+                .dataCadastro(saldo.getDataCadastro())
+                .dataAtualizacao(saldo.getDataAtualizacao())
                 .build();
     }
 

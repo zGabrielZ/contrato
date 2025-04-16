@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,6 @@ public interface HistoricoSaldoRepository extends JpaRepository<HistoricoSaldo, 
             "JOIN FETCH u.perfis p " +
             "WHERE u.id = :idUsuario and h.id = :id")
     Optional<HistoricoSaldo> buscarHistorico(@Param("idUsuario") Long idUsuario, @Param("id") Long id);
+
+    List<HistoricoSaldo> findAllByUsuarioId(Long idUsuario);
 }
