@@ -23,4 +23,13 @@ public enum TipoTelefoneEnum {
     public static boolean isCelular(TipoTelefoneEnum tipoTelefone) {
         return tipoTelefone.equals(CELULAR);
     }
+
+    public static TipoTelefoneEnum buscarPorCodigo(String codigo) {
+        for (TipoTelefoneEnum valor : TipoTelefoneEnum.values()) {
+            if (valor.name().equalsIgnoreCase(codigo)) {
+                return valor;
+            }
+        }
+        return null;
+    }
 }

@@ -24,7 +24,7 @@ public class PerfilModel implements Serializable {
 
     private String descricao;
 
-    private String autoridade;
+    private String autoriedade;
 
     private List<UsuarioModel> usuarios = new ArrayList<>();
 

@@ -28,15 +28,19 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
 
     @Override
     public UsuarioModel cadastrar(UsuarioModel usuarioModel) {
+        List<TelefoneModel> telefones = usuarioModel.getTelefones();
         usuarioModel.validarCampos();
         usuarioModel.validarSenha();
 
         validarEmail(usuarioModel.getEmail());
         validarPerfis(usuarioModel.getPerfis());
-        validarTelefones(usuarioModel.getTelefones());
 
         usuarioModel.setSaldoTotal(new SaldoTotalModel());
         usuarioModel.setSenha(passwordEncoderOutput.encode(usuarioModel.getSenha()));
+        usuarioModel.setTelefones(new ArrayList<>());
+        usuarioModel = usuarioServiceOutput.salvar(usuarioModel);
+
+        validarTelefones(telefones, usuarioModel);
         return usuarioServiceOutput.salvar(usuarioModel);
     }
 
@@ -52,7 +56,7 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
         usuarioModel.validarCampos();
 
         List<TelefoneModel> telefones = usuarioModel.getTelefones();
-        validarTelefones(telefones);
+        validarTelefones(telefones, usuarioEncontrado);
 
         List<TelefoneModel> telefonesEncontrados = usuarioEncontrado.getTelefones();
         incluirOuAtualizarTelefones(telefones, telefonesEncontrados);
@@ -103,15 +107,18 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
         perfis.forEach(perfil -> {
             PerfilModel perfilEncontrado = perfilServiceInput.buscarPorId(perfil.getId());
             perfil.setDescricao(perfilEncontrado.getDescricao());
-            perfil.setAutoridade(perfilEncontrado.getAutoridade());
+            perfil.setAutoriedade(perfilEncontrado.getAutoriedade());
         });
     }
 
-    private void validarTelefones(List<TelefoneModel> telefones) {
+    private void validarTelefones(List<TelefoneModel> telefones, UsuarioModel usuario) {
         if (!CollectionUtils.isEmpty(telefones)) {
             telefones.forEach(telefone -> {
                 telefone.validarCampos();
                 telefone.validarTipoTelefone();
+
+                telefone.setUsuario(usuario);
+                usuario.getTelefones().add(telefone);
             });
         }
     }

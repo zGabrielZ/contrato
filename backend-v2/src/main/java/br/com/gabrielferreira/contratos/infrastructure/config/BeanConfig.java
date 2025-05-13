@@ -6,6 +6,7 @@ import br.com.gabrielferreira.contratos.adapters.out.adapters.TelefoneAdapter;
 import br.com.gabrielferreira.contratos.adapters.out.adapters.UsuarioAdapter;
 import br.com.gabrielferreira.contratos.application.core.service.PerfilServiceImpl;
 import br.com.gabrielferreira.contratos.application.core.service.TelefoneServiceImpl;
+import br.com.gabrielferreira.contratos.application.core.service.TipoTelefoneServiceImpl;
 import br.com.gabrielferreira.contratos.application.core.service.UsuarioServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,5 +33,10 @@ public class BeanConfig {
                                                PasswordAdapter passwordAdapter) {
         UsuarioServiceImpl usuarioService = usuarioService(usuarioAdapter, perfilAdapter, passwordAdapter);
         return new TelefoneServiceImpl(telefoneAdapter, usuarioService);
+    }
+
+    @Bean
+    public TipoTelefoneServiceImpl tipoTelefoneService() {
+        return new TipoTelefoneServiceImpl();
     }
 }

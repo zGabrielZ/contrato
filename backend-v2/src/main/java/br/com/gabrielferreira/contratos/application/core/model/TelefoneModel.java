@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -48,7 +49,9 @@ public class TelefoneModel implements Serializable {
     }
 
     public void validarTipoTelefone() {
-        if (TipoTelefoneEnum.isResidencial(this.tipoTelefone) && this.numero.length() == 9) {
+        if (Objects.isNull(this.tipoTelefone)) {
+            throw new RegraDeNegocioException("Tipo de telefone não pode ser nulo");
+        } else if (TipoTelefoneEnum.isResidencial(this.tipoTelefone) && this.numero.length() == 9) {
             throw new RegraDeNegocioException(String.format("Este número informado %s está com o tipo de telefone residencial", this.getTelefoneFormatado()));
         } else if (TipoTelefoneEnum.isCelular(this.tipoTelefone) && this.numero.length() == 8) {
             throw new RegraDeNegocioException(String.format("Este número informado %s está com o tipo de telefone celular", this.getTelefoneFormatado()));

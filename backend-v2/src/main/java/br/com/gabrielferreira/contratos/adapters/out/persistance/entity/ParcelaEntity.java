@@ -3,6 +3,8 @@ package br.com.gabrielferreira.contratos.adapters.out.persistance.entity;
 import br.com.gabrielferreira.contratos.application.core.enums.SituacaoParcelaEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,6 +30,8 @@ public class ParcelaEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
+    @Column(columnDefinition = "char(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
 
     @Column(name = "DATA", nullable = false)
