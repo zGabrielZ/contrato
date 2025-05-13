@@ -36,13 +36,13 @@ public class UsuarioAdapter implements UsuarioServiceOutput {
     public UsuarioModel salvar(UsuarioModel usuarioModel) {
         UsuarioEntity entity = usuarioEntityMapper.toEntity(usuarioModel);
         entity = usuarioRepository.save(entity);
-        return usuarioEntityMapper.toModel(entity);
+        return usuarioEntityMapper.toModelSave(entity);
     }
 
     @Override
     public Optional<UsuarioModel> buscarPorId(UUID id) {
-        return usuarioRepository.findById(id)
-                .map(usuarioEntityMapper::toModel);
+        return usuarioRepository.findUsuarioById(id)
+                .map(usuarioEntityMapper::toModelRetrieve);
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class UsuarioAdapter implements UsuarioServiceOutput {
     @Override
     public Optional<UsuarioModel> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
-                .map(usuarioEntityMapper::toModel2);
+                .map(usuarioEntityMapper::toModelRetrieve);
     }
 
     // TODO: implementar consulta de usuários com filtro

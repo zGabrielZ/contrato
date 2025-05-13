@@ -11,8 +11,11 @@ import br.com.gabrielferreira.contratos.application.core.model.UsuarioModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -22,35 +25,48 @@ public interface UsuarioInboundMapper {
     UsuarioModel toModel(CreateUsuarioDTO createUsuarioDTO);
 
     @Mapping(target = "telefones", expression = "java(mapTelefonesDtos(usuarioModel.getTelefones()))")
+    @Mapping(target = "saldo.valor", source = "usuarioModel.saldoTotal.valor")
     UsuarioDTO toDto(UsuarioModel usuarioModel);
+
+    @Mapping(target = "tipoTelefone", expression = "java(mapTipoTelefoneEnum(createTelefoneDTO.tipoTelefone()))")
+    TelefoneModel toModel(CreateTelefoneDTO createTelefoneDTO);
+
+    @Mapping(target = "tipoTelefone", expression = "java(mapTipoTelefoneDto(telefoneModel.getTipoTelefone()))")
+    TelefoneDTO toDto(TelefoneModel telefoneModel);
 
     @Named("mapTelefonesModel")
     default List<TelefoneModel> mapTelefonesModel(List<CreateTelefoneDTO> telefones) {
-        return telefones.stream()
-                .map(telefone -> TelefoneModel.builder()
-                        .ddd(telefone.ddd())
-                        .numero(telefone.numero())
-                        .descricao(telefone.descricao())
-                        .tipoTelefone(TipoTelefoneEnum.buscarPorCodigo(telefone.tipoTelefone()))
-                        .build())
-                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(telefones)) {
+            return telefones.stream()
+                    .map(this::toModel)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+        return new ArrayList<>();
     }
 
     @Named("mapTelefonesDtos")
     default List<TelefoneDTO> mapTelefonesDtos(List<TelefoneModel> telefones) {
-        return telefones.stream()
-                .map(telefone -> TelefoneDTO.builder()
-                        .id(telefone.getId())
-                        .ddd(telefone.getDdd())
-                        .numero(telefone.getNumero())
-                        .descricao(telefone.getDescricao())
-                        .tipoTelefone(
-                                TipoTelefoneDTO.builder()
-                                        .descricao(telefone.getTipoTelefone().getDescricao())
-                                        .codigo(telefone.getTipoTelefone().name())
-                                        .build()
-                        )
-                        .build())
-                .toList();
+        if (!CollectionUtils.isEmpty(telefones)) {
+            return telefones.stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+        return new ArrayList<>();
+    }
+
+    @Named("mapTipoTelefoneDto")
+    default TipoTelefoneDTO mapTipoTelefoneDto(TipoTelefoneEnum tipoTelefone) {
+        if (Objects.nonNull(tipoTelefone)) {
+            return TipoTelefoneDTO.builder()
+                    .codigo(tipoTelefone.name())
+                    .descricao(tipoTelefone.getDescricao())
+                    .build();
+        }
+        return null;
+    }
+
+    @Named("mapTipoTelefoneEnum")
+    default TipoTelefoneEnum mapTipoTelefoneEnum(String tipoTelefone) {
+        return TipoTelefoneEnum.buscarPorCodigo(tipoTelefone);
     }
 }

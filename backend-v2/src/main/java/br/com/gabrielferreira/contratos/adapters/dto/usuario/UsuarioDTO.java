@@ -15,6 +15,7 @@ public record UsuarioDTO(
         String sobrenome,
         String email,
         List<TelefoneDTO> telefones,
-        List<PerfilDTO>  perfis
+        List<PerfilDTO>  perfis,
+        SaldoDTO saldo
 ) implements Serializable {
 }
