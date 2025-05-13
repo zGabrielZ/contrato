@@ -1,11 +1,13 @@
 package br.com.gabrielferreira.contratos.adapters.in.service.impl;
 
 import br.com.gabrielferreira.contratos.adapters.dto.perfil.PerfilDTO;
+import br.com.gabrielferreira.contratos.adapters.dto.usuario.GetUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.UsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.create.CreateUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.update.UpdateUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.in.mapper.UsuarioInboundMapper;
 import br.com.gabrielferreira.contratos.adapters.in.service.UsuarioApiService;
+import br.com.gabrielferreira.contratos.application.core.model.PerfilModel;
 import br.com.gabrielferreira.contratos.application.core.model.UsuarioModel;
 import br.com.gabrielferreira.contratos.application.ports.in.UsuarioServiceInput;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +33,9 @@ public class UsuarioApiServiceImpl implements UsuarioApiService {
     }
 
     @Override
-    public UsuarioDTO buscarPorId(UUID id) {
-        return null;
+    public GetUsuarioDTO buscarPorId(UUID id) {
+        UsuarioModel usuario = usuarioServiceInput.buscarPorId(id);
+        return mapper.toGetDto(usuario);
     }
 
     @Override
@@ -47,6 +50,7 @@ public class UsuarioApiServiceImpl implements UsuarioApiService {
 
     @Override
     public List<PerfilDTO> buscarPerfis(UUID idUsuario) {
-        return List.of();
+        List<PerfilModel> perfis = usuarioServiceInput.buscarPerfisPorUsuario(idUsuario);
+        return mapper.toDtos(perfis);
     }
 }

@@ -15,6 +15,7 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, UUID> {
     @Query(
             "SELECT u FROM UsuarioEntity u " +
                     "LEFT JOIN FETCH u.saldoTotal s " +
+                    "LEFT JOIN FETCH u.perfis p " +
                     "WHERE u.email = :email "
     )
     Optional<UsuarioEntity> findByEmail(@Param("email") String email);
@@ -22,6 +23,7 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, UUID> {
     @Query(
             "SELECT u FROM UsuarioEntity u " +
                     "LEFT JOIN FETCH u.saldoTotal s " +
+                    "LEFT JOIN FETCH u.perfis p " +
                     "WHERE u.id = :id "
     )
     Optional<UsuarioEntity> findUsuarioById(@Param("id") UUID id);
