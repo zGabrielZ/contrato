@@ -1,7 +1,5 @@
 package br.com.gabrielferreira.contratos.application.core.model;
 
-import br.com.gabrielferreira.contratos.application.exception.RegraDeNegocioException;
-import br.com.gabrielferreira.contratos.common.utils.CaracteresUtils;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,24 +51,6 @@ public class UsuarioModel implements Serializable {
         this.sobrenome = this.sobrenome.trim();
         if (StringUtils.isNotBlank(this.email)) {
             this.email = this.email.trim();
-        }
-    }
-
-    public void validarSenha() {
-        if (!CaracteresUtils.isPossuiCaracteresEspecias(this.senha)) {
-            throw new RegraDeNegocioException("A senha informada tem que ter pelo menos uma caractere especial");
-        }
-
-        if (!CaracteresUtils.isPossuiCaractereMaiusculas(this.senha)) {
-            throw new RegraDeNegocioException("A senha informada tem que ter pelo menos uma caractere maiúsculas");
-        }
-
-        if (!CaracteresUtils.isPossuiCaractereMinusculas(this.senha)) {
-            throw new RegraDeNegocioException("A senha informada tem que ter pelo menos uma caractere minúsculas");
-        }
-
-        if (!CaracteresUtils.isPossuiCaractereDigito(this.senha)) {
-            throw new RegraDeNegocioException("A senha informada tem que ter pelo menos um caractere dígito");
         }
     }
 }

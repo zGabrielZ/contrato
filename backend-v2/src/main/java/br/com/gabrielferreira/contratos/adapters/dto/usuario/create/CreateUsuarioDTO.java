@@ -1,6 +1,8 @@
 package br.com.gabrielferreira.contratos.adapters.dto.usuario.create;
 
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.IdPerfilDTO;
+import br.com.gabrielferreira.contratos.adapters.validator.perfil.PerfilValid;
+import br.com.gabrielferreira.contratos.adapters.validator.senha.SenhaValid;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -36,6 +38,7 @@ public record CreateUsuarioDTO(
         )
         String email,
 
+        @SenhaValid
         @NotBlank
         @Schema(
                 description = "Senha do usuário",
@@ -49,6 +52,7 @@ public record CreateUsuarioDTO(
         )
         List<CreateTelefoneDTO> telefones,
 
+        @PerfilValid
         @Valid
         @NotEmpty
         @NotNull

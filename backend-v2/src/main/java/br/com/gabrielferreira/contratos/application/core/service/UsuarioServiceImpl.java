@@ -30,7 +30,6 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
     public UsuarioModel cadastrar(UsuarioModel usuarioModel) {
         List<TelefoneModel> telefones = usuarioModel.getTelefones();
         usuarioModel.validarCampos();
-        usuarioModel.validarSenha();
 
         validarEmail(usuarioModel.getEmail());
         validarPerfis(usuarioModel.getPerfis());
@@ -96,14 +95,6 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
     }
 
     private void validarPerfis(List<PerfilModel> perfis) {
-        List<UUID> idsPerfis = perfis.stream().map(PerfilModel::getId).toList();
-        idsPerfis.forEach(idPerfil -> {
-            int duplicados = Collections.frequency(idsPerfis, idPerfil);
-            if (duplicados > 1) {
-                throw new RegraDeNegocioException("Não vai ser possível cadastrar este usuário pois tem perfis duplicados ou mais de duplicados");
-            }
-        });
-
         perfis.forEach(perfil -> {
             PerfilModel perfilEncontrado = perfilServiceInput.buscarPorId(perfil.getId());
             perfil.setDescricao(perfilEncontrado.getDescricao());
