@@ -1,6 +1,9 @@
 package br.com.gabrielferreira.contratos.adapters.dto.usuario.create;
 
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.IdPerfilDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 import java.io.Serializable;
@@ -9,11 +12,49 @@ import java.util.List;
 
 @Builder
 public record CreateUsuarioDTO(
+        @NotBlank
+        @Size(max = 255, min = 1)
+        @Schema(
+                description = "Nome do usuário",
+                example = "João"
+        )
         String nome,
+
+        @NotBlank
+        @Size(max = 255, min = 1)
+        @Schema(
+                description = "Sobrenome do usuário",
+                example = "Silva"
+        )
         String sobrenome,
+
+        @NotBlank
+        @Email
+        @Schema(
+                description = "E-mail do usuário",
+                example = "joao@email.com.br"
+        )
         String email,
+
+        @NotBlank
+        @Schema(
+                description = "Senha do usuário",
+                example = "senha123"
+        )
         String senha,
+
+        @Valid
+        @Schema(
+                description = "Lista de telefones do usuário"
+        )
         List<CreateTelefoneDTO> telefones,
+
+        @Valid
+        @NotEmpty
+        @NotNull
+        @Schema(
+                description = "Lista de perfis do usuário"
+        )
         List<IdPerfilDTO> perfis
 ) implements Serializable {
 
