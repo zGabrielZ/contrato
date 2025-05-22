@@ -7,10 +7,12 @@ import br.com.gabrielferreira.contratos.adapters.dto.usuario.GetUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.UsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.create.CreateTelefoneDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.create.CreateUsuarioDTO;
+import br.com.gabrielferreira.contratos.adapters.dto.usuario.filter.FilterUsuarioDTO;
 import br.com.gabrielferreira.contratos.application.core.enums.TipoTelefoneEnum;
 import br.com.gabrielferreira.contratos.application.core.model.PerfilModel;
 import br.com.gabrielferreira.contratos.application.core.model.TelefoneModel;
 import br.com.gabrielferreira.contratos.application.core.model.UsuarioModel;
+import br.com.gabrielferreira.contratos.application.core.model.filtro.FiltroUsuarioModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -41,6 +43,8 @@ public interface UsuarioInboundMapper {
 
     @Mapping(target = "tipoTelefone", expression = "java(mapTipoTelefoneDto(telefoneModel.getTipoTelefone()))")
     TelefoneDTO toDto(TelefoneModel telefoneModel);
+
+    FiltroUsuarioModel toModel(FilterUsuarioDTO filterUsuarioDTO);
 
     @Named("mapTelefonesModel")
     default List<TelefoneModel> mapTelefonesModel(List<CreateTelefoneDTO> telefones) {
@@ -82,6 +86,15 @@ public interface UsuarioInboundMapper {
         if (!CollectionUtils.isEmpty(perfilModels)) {
             return perfilModels.stream()
                     .map(this::toDto)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+        return new ArrayList<>();
+    }
+
+    default List<GetUsuarioDTO> toGetUsuarioDtos(List<UsuarioModel> usuarioModels) {
+        if (!CollectionUtils.isEmpty(usuarioModels)) {
+            return usuarioModels.stream()
+                    .map(this::toGetDto)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
         return new ArrayList<>();

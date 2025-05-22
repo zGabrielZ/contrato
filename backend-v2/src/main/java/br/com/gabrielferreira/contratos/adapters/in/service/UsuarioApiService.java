@@ -4,7 +4,9 @@ import br.com.gabrielferreira.contratos.adapters.dto.perfil.PerfilDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.GetUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.UsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.create.CreateUsuarioDTO;
+import br.com.gabrielferreira.contratos.adapters.dto.usuario.filter.FilterUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.update.UpdateUsuarioDTO;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,7 @@ public interface UsuarioApiService {
 
     void deletar(UUID id);
 
-    // TODO: implementar o método de busca com filtro, com paginação e etc
+    List<GetUsuarioDTO> buscar(Pageable pageable, FilterUsuarioDTO filtro);
 
     List<PerfilDTO> buscarPerfis(UUID idUsuario);
 }

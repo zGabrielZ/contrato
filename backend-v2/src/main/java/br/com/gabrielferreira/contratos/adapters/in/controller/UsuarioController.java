@@ -4,6 +4,7 @@ import br.com.gabrielferreira.contratos.adapters.dto.perfil.PerfilDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.GetUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.UsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.dto.usuario.create.CreateUsuarioDTO;
+import br.com.gabrielferreira.contratos.adapters.dto.usuario.filter.FilterUsuarioDTO;
 import br.com.gabrielferreira.contratos.adapters.in.service.UsuarioApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -76,5 +82,23 @@ public class UsuarioController {
             )
             @PathVariable UUID id) {
         return ResponseEntity.ok(usuarioApiService.buscarPerfis(id));
+    }
+
+    @Operation(
+            summary = "Buscar usuários",
+            description = "Buscar usuários"
+    )
+    @GetMapping
+    public ResponseEntity<Page<GetUsuarioDTO>> buscarUsuarios(
+            @Parameter(
+                    description = "Filtro de busca de usuários"
+            )
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @Valid FilterUsuarioDTO filtro
+    ) {
+        List<GetUsuarioDTO> usuarios = usuarioApiService.buscar(pageable, filtro);
+        return ResponseEntity.ok(
+                new PageImpl<>(usuarios, pageable, usuarios.size())
+        );
     }
 }

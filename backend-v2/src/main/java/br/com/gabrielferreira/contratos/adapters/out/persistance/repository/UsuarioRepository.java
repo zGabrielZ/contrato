@@ -1,6 +1,9 @@
 package br.com.gabrielferreira.contratos.adapters.out.persistance.repository;
 
 import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.UsuarioEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +30,6 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, UUID> {
                     "WHERE u.id = :id "
     )
     Optional<UsuarioEntity> findUsuarioById(@Param("id") UUID id);
+
+    Page<UsuarioEntity> findAll(Specification<UsuarioEntity> specification, Pageable pageable);
 }

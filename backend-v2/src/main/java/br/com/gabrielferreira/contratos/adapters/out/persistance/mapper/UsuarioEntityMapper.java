@@ -1,10 +1,15 @@
 package br.com.gabrielferreira.contratos.adapters.out.persistance.mapper;
 
-import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.*;
-import br.com.gabrielferreira.contratos.application.core.model.*;
+import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.PerfilEntity;
+import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.TelefoneEntity;
+import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.UsuarioEntity;
+import br.com.gabrielferreira.contratos.application.core.model.PerfilModel;
+import br.com.gabrielferreira.contratos.application.core.model.TelefoneModel;
+import br.com.gabrielferreira.contratos.application.core.model.UsuarioModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.data.domain.Page;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -41,6 +46,21 @@ public interface UsuarioEntityMapper {
 
     @Mapping(target = "usuarios", ignore = true)
     PerfilModel toPerfilModel(PerfilEntity perfilEntity);
+
+    @Mapping(target = "telefones", ignore = true)
+    @Mapping(target = "movimentacaoSaldos", ignore = true)
+    @Mapping(target = "contratos", ignore = true)
+    @Mapping(target = "perfis", ignore = true)
+    UsuarioModel toModel(UsuarioEntity usuarioEntity);
+
+    default List<UsuarioModel> toModelList(Page<UsuarioEntity> usuarioEntities) {
+        if (usuarioEntities != null && !CollectionUtils.isEmpty(usuarioEntities.getContent())) {
+            return usuarioEntities.stream()
+                    .map(this::toModel)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
+        return new ArrayList<>();
+    }
 
     @Named("toPerfilModelList")
     default List<PerfilModel> toPerfilModelList(List<PerfilEntity> perfilEntities) {

@@ -2,10 +2,12 @@ package br.com.gabrielferreira.contratos.application.core.model.filtro;
 
 import br.com.gabrielferreira.contratos.application.exception.RegraDeNegocioException;
 import lombok.Builder;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.UUID;
 
 @Builder
@@ -14,8 +16,6 @@ public record FiltroUsuarioModel(
         String nome,
         String sobrenome,
         String email,
-        LocalDate dataCadastro,
-        LocalDate dataAtualizacao,
         BigDecimal saldoTotalInicial,
         BigDecimal saldoTotalFinal
 ) implements Serializable {
@@ -34,14 +34,6 @@ public record FiltroUsuarioModel(
 
     public boolean isEmailExistente() {
         return this.email != null && !this.email.isBlank();
-    }
-
-    public boolean isDataCadastroExistente() {
-        return this.dataCadastro != null;
-    }
-
-    public boolean isDataAtualizacaoExistente() {
-        return this.dataAtualizacao != null;
     }
 
     public boolean isSaldoTotalInicialExistente() {
@@ -68,6 +60,39 @@ public record FiltroUsuarioModel(
         if (isSaldoTotalInicialExistente() && isSaldoTotalFinalExistente()
                 && this.saldoTotalInicial().compareTo(this.saldoTotalFinal()) > 0) {
             throw new RegraDeNegocioException("Saldo total inicial é maior que o saldo total final");
+        }
+    }
+
+    public void validarOrdenacao(PageInfo pageInfo) {
+        if (Objects.nonNull(pageInfo) && !CollectionUtils.isEmpty(pageInfo.sortBy())) {
+            Iterator<String[]> iterator = pageInfo.sortBy().iterator();
+            while (iterator.hasNext()) {
+                String[] sort = iterator.next();
+                String sortField = sort[1];
+                if (sortField.equalsIgnoreCase("saldo.valor")
+                        || sortField.equalsIgnoreCase("saldo")) {
+                    sort[1] = "saldoTotal.valor";
+                }
+
+                // Ignorar campos que não sejam esses abaixos
+                if (!(
+                        sortField.equalsIgnoreCase("id")
+                                || sortField.equalsIgnoreCase("nome")
+                                || sortField.equalsIgnoreCase("sobrenome")
+                                || sortField.equalsIgnoreCase("email")
+                                || sortField.equalsIgnoreCase("saldo.valor")
+                                || sortField.equalsIgnoreCase("saldo")
+                        )) {
+                    iterator.remove();
+                }
+            }
+
+            if (CollectionUtils.isEmpty(pageInfo.sortBy())) {
+                pageInfo.sortBy().add(new String[] {
+                        "DESC",
+                        "id"
+                });
+            }
         }
     }
 }

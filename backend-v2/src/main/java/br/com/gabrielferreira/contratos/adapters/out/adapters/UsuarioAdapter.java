@@ -2,16 +2,20 @@ package br.com.gabrielferreira.contratos.adapters.out.adapters;
 
 import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.PerfilEntity;
 import br.com.gabrielferreira.contratos.adapters.out.persistance.entity.UsuarioEntity;
+import br.com.gabrielferreira.contratos.adapters.out.persistance.mapper.PageRequestMapper;
 import br.com.gabrielferreira.contratos.adapters.out.persistance.mapper.PerfilEntityMapper;
 import br.com.gabrielferreira.contratos.adapters.out.persistance.mapper.UsuarioEntityMapper;
 import br.com.gabrielferreira.contratos.adapters.out.persistance.repository.PerfilRepository;
 import br.com.gabrielferreira.contratos.adapters.out.persistance.repository.UsuarioRepository;
+import br.com.gabrielferreira.contratos.adapters.out.persistance.specification.UsuarioSpecification;
 import br.com.gabrielferreira.contratos.application.core.model.PerfilModel;
 import br.com.gabrielferreira.contratos.application.core.model.UsuarioModel;
 import br.com.gabrielferreira.contratos.application.core.model.filtro.FiltroUsuarioModel;
 import br.com.gabrielferreira.contratos.application.core.model.filtro.PageInfo;
 import br.com.gabrielferreira.contratos.application.ports.out.UsuarioServiceOutput;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +31,13 @@ public class UsuarioAdapter implements UsuarioServiceOutput {
 
     private final PerfilRepository perfilRepository;
 
+    private final UsuarioSpecification usuarioSpecification;
+
     private final UsuarioEntityMapper usuarioEntityMapper;
 
     private final PerfilEntityMapper perfilEntityMapper;
+
+    private final PageRequestMapper pageRequestMapper;
 
     @Transactional
     @Override
@@ -57,10 +65,37 @@ public class UsuarioAdapter implements UsuarioServiceOutput {
                 .map(usuarioEntityMapper::toModelRetrieve);
     }
 
-    // TODO: implementar consulta de usuários com filtro
     @Override
     public List<UsuarioModel> buscar(PageInfo pageInfo, FiltroUsuarioModel filtro) {
-        return List.of();
+        Specification<UsuarioEntity> spec = Specification.where(usuarioSpecification.whereTrue());
+        if (filtro.isIdExistente()) {
+            spec = spec.and(usuarioSpecification.findById(filtro.id()));
+        }
+
+        if (filtro.isNomeExistente()) {
+            spec = spec.and(usuarioSpecification.findByNome(filtro.nome()));
+        }
+
+        if (filtro.isSobrenomeExistente()) {
+            spec = spec.and(usuarioSpecification.findBySobrenome(filtro.sobrenome()));
+        }
+
+        if (filtro.isEmailExistente()) {
+            spec = spec.and(usuarioSpecification.findByEmail(filtro.email()));
+        }
+
+        if (filtro.isSaldoTotalInicialExistente()) {
+            spec = spec.and(usuarioSpecification.findBySaldoTotalInicial(filtro.saldoTotalInicial()));
+        }
+
+        if (filtro.isSaldoTotalFinalExistente()) {
+            spec = spec.and(usuarioSpecification.findBySaldoTotalFinal(filtro.saldoTotalFinal()));
+        }
+
+        PageRequest pageRequest = pageRequestMapper.toPageRequest(pageInfo);
+        return usuarioEntityMapper.toModelList(
+                usuarioRepository.findAll(spec, pageRequest)
+        );
     }
 
     @Override

@@ -78,6 +78,7 @@ public class UsuarioServiceImpl implements UsuarioServiceInput {
         filtro.validarSaldoFinal();
         filtro.validarSaldoInicial();
         filtro.validarSaldoInicialComFinal();
+        filtro.validarOrdenacao(pageInfo);
         return usuarioServiceOutput.buscar(pageInfo, filtro);
     }
 
